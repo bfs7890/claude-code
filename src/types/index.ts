@@ -62,6 +62,53 @@ export interface Notification {
   company?: string;
 }
 
+export interface SkillGap {
+  missingSkills: string[];
+  presentSkills: string[];
+  gapScore: number;
+  learningPath: { skill: string; resource: string; duration: string }[];
+  summary: string;
+}
+
+export interface JobDecoded {
+  plainSummary: string;
+  redFlags: string[];
+  greenFlags: string[];
+  cultureSignals: string[];
+  realRequirements: string[];
+  niceToHave: string[];
+  overallRating: number;
+  verdict: string;
+}
+
+export interface CompanyBriefing {
+  overview: string;
+  recentNews: string[];
+  techStack: string[];
+  cultureInsights: string[];
+  glassdoorSentiment: string;
+  interviewTips: string[];
+  keyPeople: string[];
+  verdict: string;
+}
+
+export interface NegotiationAdvice {
+  marketMin: string;
+  marketMax: string;
+  marketMid: string;
+  counterOffer: string;
+  emailScript: string;
+  tactics: string[];
+  leverage: string[];
+}
+
+export interface InterviewQuestion {
+  question: string;
+  category: string;
+  suggestedAnswer: string;
+  tip: string;
+}
+
 export interface EmployerNotification {
   applicantName: string;
   applicantEmail: string;

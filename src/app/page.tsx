@@ -8,14 +8,26 @@ import CVLibrary from "@/components/CVLibrary";
 import CVTailorModal from "@/components/CVTailorModal";
 import ApplyModal from "@/components/ApplyModal";
 import NotificationBell from "@/components/NotificationBell";
+import SkillsGapModal from "@/components/SkillsGapModal";
+import JobDecoderModal from "@/components/JobDecoderModal";
+import CompanyBriefingModal from "@/components/CompanyBriefingModal";
+import InterviewPrepModal from "@/components/InterviewPrepModal";
+import NegotiationModal from "@/components/NegotiationModal";
+
+type ActiveModal =
+  | { type: "tailor"; job: Job }
+  | { type: "apply"; job: Job; cv?: CV; note?: string }
+  | { type: "skills"; job: Job }
+  | { type: "decode"; job: Job }
+  | { type: "briefing"; job: Job }
+  | { type: "interview"; job: Job }
+  | { type: "negotiate"; job: Job }
+  | null;
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const [selectedCV, setSelectedCV] = useState<CV | null>(null);
-  const [tailorJob, setTailorJob] = useState<Job | null>(null);
-  const [applyJob, setApplyJob] = useState<Job | null>(null);
-  const [applyCoverNote, setApplyCoverNote] = useState("");
-  const [applyCV, setApplyCV] = useState<CV | undefined>(undefined);
+  const [modal, setModal] = useState<ActiveModal>(null);
   const [cvRefreshKey, setCvRefreshKey] = useState(0);
 
   const filtered = mockJobs.filter(
@@ -26,16 +38,7 @@ export default function HomePage() {
   );
 
   function handleApplyFromTailor(job: Job, cv: CV, note: string) {
-    setTailorJob(null);
-    setApplyCV(cv);
-    setApplyCoverNote(note);
-    setApplyJob(job);
-  }
-
-  function handleDirectApply(job: Job) {
-    setApplyCV(undefined);
-    setApplyCoverNote("");
-    setApplyJob(job);
+    setModal({ type: "apply", job, cv, note });
   }
 
   return (
@@ -67,6 +70,27 @@ export default function HomePage() {
         </div>
       </header>
 
+      {/* AI Feature Strip */}
+      <div className="border-b border-slate-800 bg-slate-900/40">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          <span className="text-xs text-slate-500 flex-shrink-0">AI Tools:</span>
+          {[
+            { label: "CV Tailor", color: "text-violet-400 bg-violet-500/10 border-violet-500/20" },
+            { label: "Skills Gap", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/20" },
+            { label: "Job Decoder", color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+            { label: "Company Brief", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+            { label: "Interview Prep", color: "text-pink-400 bg-pink-500/10 border-pink-500/20" },
+            { label: "Salary Coach", color: "text-green-400 bg-green-500/10 border-green-500/20" },
+            { label: "Cover Letter", color: "text-orange-400 bg-orange-500/10 border-orange-500/20" },
+            { label: "Notifications", color: "text-slate-400 bg-slate-500/10 border-slate-500/20" },
+          ].map((f) => (
+            <span key={f.label} className={`text-xs px-2.5 py-1 rounded-full border flex-shrink-0 ${f.color}`}>
+              {f.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Main */}
       <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left — CV Library */}
@@ -86,12 +110,30 @@ export default function HomePage() {
             <div className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-3 text-sm text-violet-300">
               Selected: <strong>{selectedCV.name}</strong>
               {selectedCV.matchScore && (
-                <span className="ml-2 text-yellow-400">
-                  ★ {selectedCV.matchScore}% match
-                </span>
+                <span className="ml-2 text-yellow-400">★ {selectedCV.matchScore}% match</span>
               )}
             </div>
           )}
+
+          {/* Quick stat cards */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-violet-400">3</p>
+              <p className="text-xs text-slate-400 mt-0.5">Jobs Applied</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-green-400">2</p>
+              <p className="text-xs text-slate-400 mt-0.5">Shortlisted</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-yellow-400">87%</p>
+              <p className="text-xs text-slate-400 mt-0.5">Best Match</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 text-center">
+              <p className="text-2xl font-bold text-blue-400">1</p>
+              <p className="text-xs text-slate-400 mt-0.5">Interview</p>
+            </div>
+          </div>
         </aside>
 
         {/* Right — Job Listings */}
@@ -104,7 +146,7 @@ export default function HomePage() {
               </h2>
             </div>
             <span className="text-xs text-slate-500 bg-slate-800 px-2.5 py-1 rounded-full">
-              AI Match Ready
+              6 AI Tools per job
             </span>
           </div>
 
@@ -119,34 +161,49 @@ export default function HomePage() {
             <JobCard
               key={job.id}
               job={job}
-              onTailorCV={setTailorJob}
-              onApply={handleDirectApply}
+              onTailorCV={(j) => setModal({ type: "tailor", job: j })}
+              onApply={(j) => setModal({ type: "apply", job: j })}
+              onSkillsGap={(j) => setModal({ type: "skills", job: j })}
+              onDecode={(j) => setModal({ type: "decode", job: j })}
+              onBriefing={(j) => setModal({ type: "briefing", job: j })}
+              onInterviewPrep={(j) => setModal({ type: "interview", job: j })}
+              onNegotiate={(j) => setModal({ type: "negotiate", job: j })}
             />
           ))}
         </section>
       </main>
 
-      {/* CV Tailor Modal */}
-      {tailorJob && (
+      {/* Modals */}
+      {modal?.type === "tailor" && (
         <CVTailorModal
-          job={tailorJob}
-          onClose={() => setTailorJob(null)}
+          job={modal.job}
+          onClose={() => setModal(null)}
           onSaved={() => setCvRefreshKey((k) => k + 1)}
-          onApply={handleApplyFromTailor}
+          onApply={(job, cv, note) => handleApplyFromTailor(job, cv, note)}
         />
       )}
-
-      {/* Apply Modal */}
-      {applyJob && (
+      {modal?.type === "apply" && (
         <ApplyModal
-          job={applyJob}
-          tailoredCV={applyCV}
-          coverNote={applyCoverNote}
-          onClose={() => {
-            setApplyJob(null);
-            setApplyCV(undefined);
-          }}
+          job={modal.job}
+          tailoredCV={modal.cv}
+          coverNote={modal.note}
+          onClose={() => setModal(null)}
         />
+      )}
+      {modal?.type === "skills" && (
+        <SkillsGapModal job={modal.job} onClose={() => setModal(null)} />
+      )}
+      {modal?.type === "decode" && (
+        <JobDecoderModal job={modal.job} onClose={() => setModal(null)} />
+      )}
+      {modal?.type === "briefing" && (
+        <CompanyBriefingModal job={modal.job} onClose={() => setModal(null)} />
+      )}
+      {modal?.type === "interview" && (
+        <InterviewPrepModal job={modal.job} onClose={() => setModal(null)} />
+      )}
+      {modal?.type === "negotiate" && (
+        <NegotiationModal job={modal.job} onClose={() => setModal(null)} />
       )}
     </div>
   );
