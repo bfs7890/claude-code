@@ -111,7 +111,7 @@ class JAIS_Core {
 			<div class="jais-tabs" role="tablist">
 				<?php $first = true; foreach ( $tabs as $key => $label ) : ?>
 					<button
-						class="jais-tab-btn<?php echo $first ? ' active' : ''; ?>"
+						class="jais-tab-btn<?php echo $first ? ' is-active' : ''; ?>"
 						data-tab="<?php echo esc_attr( $key ); ?>"
 						role="tab"
 						aria-selected="<?php echo $first ? 'true' : 'false'; ?>"
@@ -125,7 +125,7 @@ class JAIS_Core {
 			<div class="jais-tab-panels">
 				<?php $first = true; foreach ( $tabs as $key => $label ) : ?>
 					<div
-						class="jais-tab-panel<?php echo $first ? ' active' : ''; ?>"
+						class="jais-tab-panel<?php echo $first ? ' is-active' : ''; ?>"
 						id="jais-panel-<?php echo esc_attr( $key ); ?>"
 						role="tabpanel"
 					>
