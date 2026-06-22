@@ -100,7 +100,7 @@
 				b.classList.toggle('is-active', b === btn);
 			});
 			dashboard.querySelectorAll('.jais-tab-panel').forEach(function (p) {
-				p.classList.toggle('is-active', p.id === 'jais-tab-' + target);
+				p.classList.toggle('is-active', p.id === 'jais-panel-' + target);
 			});
 		});
 
