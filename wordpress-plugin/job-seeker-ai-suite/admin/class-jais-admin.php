@@ -45,45 +45,43 @@ class JAIS_Admin {
 	public function register_settings(): void {
 		$providers = JAIS_API::get_providers();
 
-		register_setting( 'jais_settings_group', 'jais_email_enabled', [
-			'sanitize_callback' => 'absint',
-			'default'           => 1,
-		] );
-		register_setting( 'jais_settings_group', 'jais_admin_notify_enabled', [
-			'sanitize_callback' => 'absint',
-			'default'           => 1,
-		] );
-		register_setting( 'jais_settings_group', 'jais_admin_notify_email', [
-			'sanitize_callback' => 'sanitize_email',
-			'default'           => get_option( 'admin_email' ),
-		] );
-
-		register_setting( 'jais_settings_group', 'jais_provider', [
+		// ── General tab group ────────────────────────────────
+		register_setting( 'jais_general_group', 'jais_provider', [
 			'sanitize_callback' => 'sanitize_text_field',
 			'default'           => 'anthropic',
 		] );
-
-		// Legacy Anthropic key option.
-		register_setting( 'jais_settings_group', 'jais_api_key', [
+		register_setting( 'jais_general_group', 'jais_api_key', [
 			'sanitize_callback' => 'sanitize_text_field',
 		] );
-
+		register_setting( 'jais_general_group', 'jais_email_enabled', [
+			'sanitize_callback' => 'absint',
+			'default'           => 1,
+		] );
+		register_setting( 'jais_general_group', 'jais_admin_notify_enabled', [
+			'sanitize_callback' => 'absint',
+			'default'           => 1,
+		] );
+		register_setting( 'jais_general_group', 'jais_admin_notify_email', [
+			'sanitize_callback' => 'sanitize_email',
+			'default'           => get_option( 'admin_email' ),
+		] );
 		foreach ( array_keys( $providers ) as $provider ) {
-			register_setting( 'jais_settings_group', "jais_api_key_{$provider}", [
+			register_setting( 'jais_general_group', "jais_api_key_{$provider}", [
 				'sanitize_callback' => 'sanitize_text_field',
 			] );
-			register_setting( 'jais_settings_group', "jais_model_{$provider}", [
+			register_setting( 'jais_general_group', "jais_model_{$provider}", [
 				'sanitize_callback' => 'sanitize_text_field',
 				'default'           => $providers[ $provider ]['default'],
 			] );
 		}
 
+		// ── Modules tab group ────────────────────────────────
 		foreach ( array_keys( $this->modules ) as $key ) {
-			register_setting( 'jais_settings_group', "jais_enabled_{$key}", [
+			register_setting( 'jais_modules_group', "jais_enabled_{$key}", [
 				'sanitize_callback' => 'absint',
 				'default'           => 1,
 			] );
-			register_setting( 'jais_settings_group', "jais_access_{$key}", [
+			register_setting( 'jais_modules_group', "jais_access_{$key}", [
 				'sanitize_callback' => 'sanitize_text_field',
 				'default'           => 'everyone',
 			] );
@@ -130,7 +128,13 @@ class JAIS_Admin {
 			</nav>
 
 			<form method="post" action="options.php">
-				<?php settings_fields( 'jais_settings_group' ); ?>
+				<?php
+				if ( $active_tab === 'modules' ) {
+					settings_fields( 'jais_modules_group' );
+				} else {
+					settings_fields( 'jais_general_group' );
+				}
+				?>
 
 				<?php if ( $active_tab === 'general' ) : ?>
 				<div class="jais-tab-content">
