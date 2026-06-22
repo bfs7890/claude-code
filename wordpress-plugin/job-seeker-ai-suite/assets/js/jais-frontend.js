@@ -92,21 +92,27 @@
 		var dashboard = document.querySelector('.jais-dashboard');
 		if (!dashboard) return;
 
-		dashboard.addEventListener('click', function (e) {
-			var btn = e.target.closest('.jais-tab-btn');
-			if (!btn) return;
+		function activateTab(btn) {
 			var target = btn.dataset.tab;
 			dashboard.querySelectorAll('.jais-tab-btn').forEach(function (b) {
 				b.classList.toggle('is-active', b === btn);
+				b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
 			});
 			dashboard.querySelectorAll('.jais-tab-panel').forEach(function (p) {
-				p.classList.toggle('is-active', p.id === 'jais-panel-' + target);
+				var show = p.id === 'jais-panel-' + target;
+				p.classList.toggle('is-active', show);
+				p.style.display = show ? 'block' : 'none';
 			});
+		}
+
+		dashboard.addEventListener('click', function (e) {
+			var btn = e.target.closest('.jais-tab-btn');
+			if (btn) activateTab(btn);
 		});
 
 		// Activate first tab
 		var firstBtn = dashboard.querySelector('.jais-tab-btn');
-		if (firstBtn) firstBtn.click();
+		if (firstBtn) activateTab(firstBtn);
 	}
 
 	/* ── Sliders ────────────────────────────────────────── */
