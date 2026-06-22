@@ -45,6 +45,19 @@ class JAIS_Admin {
 	public function register_settings(): void {
 		$providers = JAIS_API::get_providers();
 
+		register_setting( 'jais_settings_group', 'jais_email_enabled', [
+			'sanitize_callback' => 'absint',
+			'default'           => 1,
+		] );
+		register_setting( 'jais_settings_group', 'jais_admin_notify_enabled', [
+			'sanitize_callback' => 'absint',
+			'default'           => 1,
+		] );
+		register_setting( 'jais_settings_group', 'jais_admin_notify_email', [
+			'sanitize_callback' => 'sanitize_email',
+			'default'           => get_option( 'admin_email' ),
+		] );
+
 		register_setting( 'jais_settings_group', 'jais_provider', [
 			'sanitize_callback' => 'sanitize_text_field',
 			'default'           => 'anthropic',
@@ -192,6 +205,41 @@ class JAIS_Admin {
 						</table>
 					</div>
 					<?php endforeach; ?>
+
+					<div class="jais-settings-card">
+						<h2>Email Notifications</h2>
+						<table class="form-table">
+							<tr>
+								<th scope="row">Enable Email Results</th>
+								<td>
+									<label class="jais-toggle">
+										<input type="checkbox" name="jais_email_enabled" value="1" <?php checked( 1, get_option( 'jais_email_enabled', 1 ) ); ?>>
+										<span class="jais-toggle-slider"></span>
+									</label>
+									<p class="description">Show "Email me these results" button after every AI result.</p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">Notify Admin</th>
+								<td>
+									<label class="jais-toggle">
+										<input type="checkbox" name="jais_admin_notify_enabled" value="1" <?php checked( 1, get_option( 'jais_admin_notify_enabled', 1 ) ); ?>>
+										<span class="jais-toggle-slider"></span>
+									</label>
+									<p class="description">Send admin a notification each time a user emails their results.</p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="jais_admin_notify_email">Admin Notification Email</label></th>
+								<td>
+									<input type="email" id="jais_admin_notify_email" name="jais_admin_notify_email"
+										value="<?php echo esc_attr( get_option( 'jais_admin_notify_email', get_option( 'admin_email' ) ) ); ?>"
+										class="regular-text">
+									<p class="description">Defaults to your WordPress admin email.</p>
+								</td>
+							</tr>
+						</table>
+					</div>
 
 					<div class="jais-settings-card">
 						<h2>Dashboard Shortcode</h2>

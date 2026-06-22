@@ -44,13 +44,26 @@
 		return card.querySelector('.jais-result');
 	}
 
-	function showResult(card, html, isError) {
+	function showResult(card, html, isError, module) {
 		var panel = resultPanel(card);
 		if (!panel) return;
 		panel.hidden = false;
-		panel.innerHTML = isError
-			? '<div class="jais-error">⚠️ ' + esc(html) + '</div>'
-			: html;
+		if (isError) {
+			panel.innerHTML = '<div class="jais-error">⚠️ ' + esc(html) + '</div>';
+			return;
+		}
+		var emailBox = '';
+		if (module) {
+			emailBox = '<div class="jais-email-box">'
+				+ '<p><strong>📧 Email me these results</strong></p>'
+				+ '<div class="jais-email-row">'
+				+ '<input class="jais-input jais-email-input" type="email" placeholder="your@email.com">'
+				+ '<button class="jais-btn jais-btn--outline jais-email-send" data-module="' + esc(module) + '">Send</button>'
+				+ '</div>'
+				+ '<p class="jais-email-msg"></p>'
+				+ '</div>';
+		}
+		panel.innerHTML = html + emailBox;
 	}
 
 	function copyToClipboard(text, btn) {
@@ -172,7 +185,7 @@
 				+ (d.experience && d.experience.length ? '<div class="jais-briefing-section"><div class="jais-briefing-label">Tailored Experience</div>' + listHtml(d.experience, 'jais-list--bullet') + '</div>' : '')
 				+ (d.keyChanges && d.keyChanges.length ? '<div class="jais-briefing-section"><div class="jais-briefing-label">Key Changes Made</div>' + listHtml(d.keyChanges, 'jais-list--bullet') + '</div>' : '')
 				+ (d.coverNote ? '<div class="jais-briefing-section"><div class="jais-briefing-label">Cover Note <button class="jais-copy-btn" data-copy="cover">Copy</button></div><div class="jais-email-box" id="jais-cv-cover">' + esc(d.coverNote) + '</div></div>' : '');
-			showResult(card, html);
+			showResult(card, html, false, 'cv_tailor');
 			var copyBtn = card.querySelector('[data-copy="cover"]');
 			if (copyBtn) {
 				copyBtn.addEventListener('click', function () {
@@ -206,7 +219,7 @@
 						return '<li><strong>' + esc(lp.skill) + '</strong> — ' + esc(lp.resource) + ' (' + esc(lp.duration) + ')</li>';
 					}).join('') + '</ul>'
 					: '');
-			showResult(card, html);
+			showResult(card, html, false, 'skills_gap');
 		});
 	}
 
@@ -228,7 +241,7 @@
 				+ (d.realRequirements && d.realRequirements.length ? '<div class="jais-briefing-label">Must-Haves</div>' + listHtml(d.realRequirements, 'jais-list--bullet') : '')
 				+ (d.niceToHave && d.niceToHave.length ? '<div class="jais-briefing-label jais-mt-8">Nice-to-Haves</div>' + listHtml(d.niceToHave, 'jais-list--bullet') : '')
 				+ (d.cultureSignals && d.cultureSignals.length ? '<div class="jais-briefing-label jais-mt-8">Culture Signals</div>' + tagList(d.cultureSignals) : '');
-			showResult(card, html);
+			showResult(card, html, false, 'job_decoder');
 		});
 	}
 
@@ -249,7 +262,7 @@
 				+ (d.cultureInsights && d.cultureInsights.length ? '<div class="jais-briefing-label jais-mt-8">Culture Insights</div>' + listHtml(d.cultureInsights, 'jais-list--bullet') : '')
 				+ (d.keyPeople && d.keyPeople.length ? '<div class="jais-briefing-label jais-mt-8">Likely Interview Panel</div>' + tagList(d.keyPeople) : '')
 				+ (d.interviewTips && d.interviewTips.length ? '<hr class="jais-divider"><div class="jais-briefing-label">Interview Tips</div>' + listHtml(d.interviewTips, 'jais-list--star') : '');
-			showResult(card, html);
+			showResult(card, html, false, 'company_brief');
 		});
 	}
 
@@ -269,7 +282,7 @@
 					+ (q.tip ? '<div class="jais-q-tip">💡 Tip: ' + esc(q.tip) + '</div>' : '')
 					+ '</div>';
 			});
-			showResult(card, html);
+			showResult(card, html, false, 'interview_prep');
 		});
 	}
 
@@ -295,7 +308,7 @@
 				+ (d.emailScript
 					? '<hr class="jais-divider"><div class="jais-briefing-label">Ready-to-Send Email <button class="jais-copy-btn" id="jais-neg-copy">Copy Email</button></div><div class="jais-email-box" id="jais-neg-email">' + esc(d.emailScript) + '</div>'
 					: '');
-			showResult(card, html);
+			showResult(card, html, false, 'negotiation');
 			var copyBtn = card.querySelector('#jais-neg-copy');
 			if (copyBtn) {
 				copyBtn.addEventListener('click', function () {
@@ -329,7 +342,7 @@
 					+ (j.salaryNote ? '<div class="jais-text-sm jais-text-muted jais-mt-8">💷 ' + esc(j.salaryNote) + '</div>' : '')
 					+ '</div>';
 			});
-			showResult(card, html);
+			showResult(card, html, false, 'prioritiser');
 		});
 	}
 
@@ -353,7 +366,7 @@
 				+ (d.recommendations && d.recommendations.length
 					? '<hr class="jais-divider"><div class="jais-briefing-label">Recommendations</div>' + listHtml(d.recommendations, 'jais-list--bullet')
 					: '');
-			showResult(card, html);
+			showResult(card, html, false, 'burnout');
 
 			// Save to localStorage for trend chart
 			saveBurnoutEntry(d);
@@ -606,11 +619,55 @@
 		report.innerHTML = html;
 	}
 
+	/* ── Email results handler ──────────────────────────── */
+
+	function initEmailSend() {
+		document.addEventListener('click', function (e) {
+			var btn = e.target.closest('.jais-email-send');
+			if (!btn) return;
+			var box   = btn.closest('.jais-email-box');
+			var input = box.querySelector('.jais-email-input');
+			var msg   = box.querySelector('.jais-email-msg');
+			var email = input.value.trim();
+			var module = btn.dataset.module;
+			var panel  = btn.closest('.jais-result');
+			if (!email) { msg.textContent = 'Please enter your email.'; return; }
+
+			// Collect plain text from result panel (excluding the email box itself)
+			var clone = panel.cloneNode(true);
+			var emailBoxClone = clone.querySelector('.jais-email-box');
+			if (emailBoxClone) emailBoxClone.remove();
+			var resultText = clone.innerText || clone.textContent || '';
+
+			btn.disabled = true;
+			msg.textContent = 'Sending…';
+
+			var fd = new FormData();
+			fd.append('action', 'jais_send_results');
+			fd.append('nonce', jaisData.nonce);
+			fd.append('user_email', email);
+			fd.append('module', module);
+			fd.append('result_text', resultText.trim());
+
+			fetch(jaisData.ajaxurl, { method: 'POST', body: fd })
+				.then(function (r) { return r.json(); })
+				.then(function (d) {
+					msg.textContent = d.success ? '✅ ' + d.data : '❌ ' + (d.data || 'Failed to send.');
+					btn.disabled = false;
+				})
+				.catch(function () {
+					msg.textContent = '❌ Network error. Please try again.';
+					btn.disabled = false;
+				});
+		});
+	}
+
 	/* ── Init ───────────────────────────────────────────── */
 
 	document.addEventListener('DOMContentLoaded', function () {
 		initTabs();
 		initSliders();
+		initEmailSend();
 
 		// Restore burnout chart if history exists
 		document.querySelectorAll('#jais-burnout').forEach(function (card) {

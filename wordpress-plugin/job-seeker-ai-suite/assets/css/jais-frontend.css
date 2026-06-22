@@ -480,6 +480,20 @@
 	margin-top: 8px;
 }
 
+/* ── Email capture (appended after results) ── */
+.jais-result .jais-email-box {
+	background: #f0f7ff;
+	border: 1px solid #c5ddf5;
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 20px;
+	white-space: normal;
+}
+.jais-result .jais-email-box p { margin: 0 0 10px; font-size: 14px; }
+.jais-email-row { display: flex; gap: 8px; align-items: center; }
+.jais-email-row .jais-input { flex: 1; }
+.jais-email-msg { font-size: 13px; color: var(--jais-gray-600); margin: 8px 0 0; min-height: 18px; }
+
 /* ── Prioritiser job cards ── */
 .jais-job-rank-card {
 	background: var(--jais-gray-50);

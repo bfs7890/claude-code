@@ -29,9 +29,11 @@ require_once JAIS_PLUGIN_DIR . 'includes/modules/class-jais-prioritiser.php';
 require_once JAIS_PLUGIN_DIR . 'includes/modules/class-jais-burnout.php';
 require_once JAIS_PLUGIN_DIR . 'includes/modules/class-jais-video-sim.php';
 require_once JAIS_PLUGIN_DIR . 'includes/class-jais-core.php';
+require_once JAIS_PLUGIN_DIR . 'includes/class-jais-email.php';
 require_once JAIS_PLUGIN_DIR . 'admin/class-jais-admin.php';
 
 add_action( 'plugins_loaded', function () {
 	JAIS_Core::get_instance();
+	new JAIS_Email();
 	JAIS_Admin::get_instance();
 } );
