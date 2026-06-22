@@ -1,8 +1,10 @@
 /* Job Seeker AI Suite — Frontend JS (vanilla, no jQuery) */
-/* global jaisData */
+/* global jaisAjax */
 
 (function () {
 	'use strict';
+
+	var jaisData = (typeof jaisAjax !== 'undefined') ? jaisAjax : {};
 
 	/* ── Utilities ─────────────────────────────────────────── */
 
