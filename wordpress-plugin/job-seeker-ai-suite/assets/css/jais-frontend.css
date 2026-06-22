@@ -1,0 +1,739 @@
+/* Job Seeker AI Suite — Frontend Styles */
+
+:root {
+	--jais-blue:       #1B6CA8;
+	--jais-blue-dark:  #154f7c;
+	--jais-blue-light: #e8f2fb;
+	--jais-green:      #16a34a;
+	--jais-green-light:#dcfce7;
+	--jais-pink:       #db2777;
+	--jais-pink-light: #fce7f3;
+	--jais-yellow:     #d97706;
+	--jais-yellow-light:#fef3c7;
+	--jais-red:        #dc2626;
+	--jais-red-light:  #fee2e2;
+	--jais-gray-50:    #f9fafb;
+	--jais-gray-100:   #f3f4f6;
+	--jais-gray-200:   #e5e7eb;
+	--jais-gray-400:   #9ca3af;
+	--jais-gray-600:   #4b5563;
+	--jais-gray-800:   #1f2937;
+	--jais-radius:     12px;
+	--jais-shadow:     0 2px 12px rgba(0,0,0,.08);
+	--jais-shadow-lg:  0 4px 24px rgba(0,0,0,.12);
+}
+
+/* ── Dashboard ── */
+.jais-dashboard {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 0 16px 40px;
+	color: var(--jais-gray-800);
+}
+
+/* ── Tabs ── */
+.jais-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 24px;
+	border-bottom: 2px solid var(--jais-gray-200);
+	padding-bottom: 0;
+}
+
+.jais-tab-btn {
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	padding: 10px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	color: var(--jais-gray-600);
+	transition: color .15s, border-color .15s;
+	margin-bottom: -2px;
+	white-space: nowrap;
+}
+
+.jais-tab-btn:hover {
+	color: var(--jais-blue);
+}
+
+.jais-tab-btn.is-active {
+	color: var(--jais-blue);
+	border-bottom-color: var(--jais-blue);
+	font-weight: 600;
+}
+
+.jais-tab-panel {
+	display: none;
+}
+
+.jais-tab-panel.is-active {
+	display: block;
+}
+
+/* ── Card ── */
+.jais-card {
+	background: #fff;
+	border-radius: var(--jais-radius);
+	box-shadow: var(--jais-shadow);
+	padding: 28px;
+	margin-bottom: 24px;
+}
+
+.jais-card__header {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.jais-icon {
+	font-size: 32px;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.jais-card__title {
+	font-size: 20px;
+	font-weight: 700;
+	margin: 0 0 4px;
+	color: var(--jais-gray-800);
+}
+
+.jais-card__subtitle {
+	font-size: 14px;
+	color: var(--jais-gray-600);
+	margin: 0;
+}
+
+.jais-section-title {
+	font-size: 16px;
+	font-weight: 600;
+	margin: 24px 0 12px;
+	color: var(--jais-gray-800);
+}
+
+/* ── Form ── */
+.jais-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.jais-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.jais-label {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--jais-gray-800);
+}
+
+.jais-req {
+	color: var(--jais-red);
+	margin-left: 2px;
+}
+
+.jais-optional {
+	color: var(--jais-gray-400);
+	font-weight: 400;
+	font-size: 12px;
+}
+
+.jais-input,
+.jais-textarea {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 8px;
+	font-size: 14px;
+	color: var(--jais-gray-800);
+	background: var(--jais-gray-50);
+	transition: border-color .15s, box-shadow .15s;
+	box-sizing: border-box;
+	font-family: inherit;
+}
+
+.jais-input:focus,
+.jais-textarea:focus {
+	outline: none;
+	border-color: var(--jais-blue);
+	box-shadow: 0 0 0 3px rgba(27,108,168,.12);
+	background: #fff;
+}
+
+.jais-textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+
+/* ── Buttons ── */
+.jais-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 11px 24px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+	transition: background .15s, transform .1s;
+	background: var(--jais-blue);
+	color: #fff;
+	align-self: flex-start;
+}
+
+.jais-btn:hover:not(:disabled) {
+	background: var(--jais-blue-dark);
+	transform: translateY(-1px);
+}
+
+.jais-btn:active {
+	transform: translateY(0);
+}
+
+.jais-btn:disabled {
+	opacity: .6;
+	cursor: not-allowed;
+}
+
+.jais-btn--blue   { background: var(--jais-blue);  }
+.jais-btn--blue:hover:not(:disabled) { background: var(--jais-blue-dark); }
+
+.jais-btn--green  { background: var(--jais-green); }
+.jais-btn--green:hover:not(:disabled) { background: #15803d; }
+
+.jais-btn--pink   { background: var(--jais-pink);  }
+.jais-btn--pink:hover:not(:disabled) { background: #be185d; }
+
+.jais-btn--yellow { background: var(--jais-yellow); }
+.jais-btn--yellow:hover:not(:disabled) { background: #b45309; }
+
+.jais-btn--outline {
+	background: transparent;
+	border: 1.5px solid var(--jais-blue);
+	color: var(--jais-blue);
+}
+.jais-btn--outline:hover:not(:disabled) {
+	background: var(--jais-blue-light);
+}
+
+/* ── Spinner ── */
+.jais-spinner {
+	width: 16px;
+	height: 16px;
+	border: 2px solid rgba(255,255,255,.4);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: jais-spin .7s linear infinite;
+	display: inline-block;
+}
+
+@keyframes jais-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* ── Result panel ── */
+.jais-result {
+	margin-top: 24px;
+	padding-top: 24px;
+	border-top: 1px solid var(--jais-gray-200);
+}
+
+/* ── Gate message ── */
+.jais-gate {
+	background: var(--jais-blue-light);
+	border: 1px solid #bee3f8;
+	border-radius: var(--jais-radius);
+	padding: 20px 24px;
+	text-align: center;
+	font-size: 15px;
+	color: var(--jais-blue-dark);
+}
+
+.jais-gate a {
+	color: var(--jais-blue);
+	font-weight: 600;
+	text-decoration: underline;
+}
+
+/* ── Sliders (Burnout) ── */
+.jais-slider-field {
+	background: var(--jais-gray-50);
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 10px;
+	padding: 16px;
+}
+
+.jais-slider-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.jais-slider-value {
+	background: var(--jais-blue);
+	color: #fff;
+	font-weight: 700;
+	font-size: 15px;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.jais-slider {
+	-webkit-appearance: none;
+	width: 100%;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--jais-gray-200);
+	outline: none;
+	cursor: pointer;
+}
+
+.jais-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--jais-blue);
+	cursor: pointer;
+	box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+
+.jais-slider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--jais-blue);
+	cursor: pointer;
+	border: none;
+	box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+
+.jais-slider-labels {
+	display: flex;
+	justify-content: space-between;
+	font-size: 11px;
+	color: var(--jais-gray-400);
+	margin-top: 6px;
+}
+
+/* ── Burnout trend chart ── */
+.jais-burnout-trend {
+	margin-top: 24px;
+	padding: 20px;
+	background: var(--jais-gray-50);
+	border-radius: var(--jais-radius);
+	border: 1px solid var(--jais-gray-200);
+}
+
+.jais-burnout-trend canvas {
+	max-width: 100%;
+	display: block;
+	margin: 0 auto;
+}
+
+/* ── Risk badge ── */
+.jais-risk-badge {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 13px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+}
+
+.jais-risk-badge--low      { background: var(--jais-green-light); color: var(--jais-green); }
+.jais-risk-badge--medium   { background: var(--jais-yellow-light); color: var(--jais-yellow); }
+.jais-risk-badge--high     { background: var(--jais-red-light); color: var(--jais-red); }
+.jais-risk-badge--critical { background: var(--jais-red); color: #fff; }
+
+/* ── Score gauge ── */
+.jais-score-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 12px 0;
+}
+
+.jais-score-bar-wrap {
+	flex: 1;
+	height: 8px;
+	background: var(--jais-gray-200);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.jais-score-bar {
+	height: 100%;
+	border-radius: 4px;
+	background: var(--jais-blue);
+	transition: width .6s ease;
+}
+
+.jais-score-num {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--jais-gray-800);
+	min-width: 36px;
+	text-align: right;
+}
+
+/* ── Lists ── */
+.jais-list {
+	list-style: none;
+	padding: 0;
+	margin: 8px 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.jais-list li {
+	font-size: 14px;
+	padding-left: 22px;
+	position: relative;
+	color: var(--jais-gray-800);
+}
+
+.jais-list li::before {
+	content: attr(data-icon);
+	position: absolute;
+	left: 0;
+}
+
+.jais-list--check li::before { content: '✅'; }
+.jais-list--cross li::before { content: '❌'; }
+.jais-list--bullet li::before { content: '•'; color: var(--jais-blue); }
+.jais-list--star li::before  { content: '⭐'; }
+
+/* ── Tags / Chips ── */
+.jais-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 6px;
+}
+
+.jais-tag {
+	background: var(--jais-blue-light);
+	color: var(--jais-blue-dark);
+	padding: 3px 10px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.jais-tag--green  { background: var(--jais-green-light); color: var(--jais-green); }
+.jais-tag--red    { background: var(--jais-red-light);   color: var(--jais-red); }
+.jais-tag--yellow { background: var(--jais-yellow-light); color: var(--jais-yellow); }
+
+/* ── Section divider ── */
+.jais-divider {
+	border: none;
+	border-top: 1px solid var(--jais-gray-200);
+	margin: 20px 0;
+}
+
+/* ── Copy button ── */
+.jais-copy-btn {
+	font-size: 12px;
+	padding: 4px 10px;
+	border-radius: 6px;
+	border: 1px solid var(--jais-gray-200);
+	background: var(--jais-gray-50);
+	cursor: pointer;
+	color: var(--jais-gray-600);
+	margin-left: 8px;
+	transition: background .15s;
+}
+
+.jais-copy-btn:hover {
+	background: var(--jais-gray-100);
+}
+
+/* ── Email script box ── */
+.jais-email-box {
+	background: var(--jais-gray-50);
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 8px;
+	padding: 16px;
+	font-size: 13px;
+	line-height: 1.7;
+	white-space: pre-wrap;
+	word-break: break-word;
+	margin-top: 8px;
+}
+
+/* ── Prioritiser job cards ── */
+.jais-job-rank-card {
+	background: var(--jais-gray-50);
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 10px;
+	padding: 16px 20px;
+	margin-bottom: 12px;
+}
+
+.jais-job-rank-card:first-child {
+	border-color: var(--jais-blue);
+	background: var(--jais-blue-light);
+}
+
+.jais-job-rank-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.jais-job-rank-title {
+	font-weight: 700;
+	font-size: 15px;
+}
+
+.jais-job-rank-score {
+	font-size: 22px;
+	font-weight: 800;
+	color: var(--jais-blue);
+}
+
+/* ── Interview question cards ── */
+.jais-q-card {
+	background: var(--jais-gray-50);
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 10px;
+	padding: 16px 20px;
+	margin-bottom: 12px;
+}
+
+.jais-q-num {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	color: var(--jais-blue);
+	margin-bottom: 4px;
+}
+
+.jais-q-text {
+	font-size: 15px;
+	font-weight: 600;
+	margin: 0 0 12px;
+}
+
+.jais-q-answer {
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--jais-gray-600);
+	background: #fff;
+	border-radius: 8px;
+	padding: 12px;
+	border: 1px solid var(--jais-gray-200);
+	margin-bottom: 8px;
+}
+
+.jais-q-tip {
+	font-size: 13px;
+	color: var(--jais-yellow);
+	font-weight: 500;
+}
+
+/* ── Video Sim ── */
+.jais-vs-progress {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--jais-gray-600);
+	margin-bottom: 16px;
+}
+
+.jais-vs-progress-bar {
+	flex: 1;
+	height: 6px;
+	background: var(--jais-gray-200);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.jais-vs-progress-fill {
+	height: 100%;
+	background: var(--jais-blue);
+	border-radius: 3px;
+	transition: width .4s ease;
+}
+
+.jais-vs-question-box {
+	background: var(--jais-blue-light);
+	border-radius: 10px;
+	padding: 20px;
+	margin-bottom: 20px;
+}
+
+.jais-vs-category {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	color: var(--jais-blue);
+	margin-bottom: 8px;
+}
+
+.jais-vs-question {
+	font-size: 17px;
+	font-weight: 600;
+	margin: 0;
+	color: var(--jais-gray-800);
+	line-height: 1.5;
+}
+
+.jais-vs-feedback {
+	margin-top: 20px;
+	padding: 20px;
+	background: var(--jais-gray-50);
+	border-radius: 10px;
+	border: 1px solid var(--jais-gray-200);
+}
+
+.jais-vs-score-row {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 16px;
+	flex-wrap: wrap;
+}
+
+.jais-vs-score-chip {
+	background: #fff;
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 8px;
+	padding: 10px 16px;
+	text-align: center;
+}
+
+.jais-vs-score-chip-label {
+	font-size: 11px;
+	color: var(--jais-gray-400);
+	text-transform: uppercase;
+	letter-spacing: .5px;
+}
+
+.jais-vs-score-chip-val {
+	font-size: 24px;
+	font-weight: 800;
+	color: var(--jais-blue);
+}
+
+/* ── Skills gap ── */
+.jais-gap-score {
+	font-size: 48px;
+	font-weight: 900;
+	color: var(--jais-blue);
+	line-height: 1;
+}
+
+/* ── Company briefing ── */
+.jais-briefing-section {
+	margin-bottom: 20px;
+}
+
+.jais-briefing-label {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	color: var(--jais-gray-400);
+	margin-bottom: 6px;
+}
+
+/* ── Market salary display ── */
+.jais-salary-row {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	margin: 16px 0;
+}
+
+.jais-salary-chip {
+	background: var(--jais-gray-50);
+	border: 1px solid var(--jais-gray-200);
+	border-radius: 10px;
+	padding: 12px;
+	text-align: center;
+}
+
+.jais-salary-chip-label {
+	font-size: 11px;
+	color: var(--jais-gray-400);
+	text-transform: uppercase;
+	letter-spacing: .5px;
+}
+
+.jais-salary-chip-val {
+	font-size: 18px;
+	font-weight: 800;
+	color: var(--jais-gray-800);
+	margin-top: 4px;
+}
+
+.jais-salary-chip-val--counter {
+	color: var(--jais-green);
+}
+
+/* ── Error / notice ── */
+.jais-error {
+	background: var(--jais-red-light);
+	border: 1px solid #fca5a5;
+	border-radius: 8px;
+	padding: 12px 16px;
+	color: var(--jais-red);
+	font-size: 14px;
+	margin-top: 16px;
+}
+
+.jais-notice {
+	background: var(--jais-blue-light);
+	border: 1px solid #bfdbfe;
+	border-radius: 8px;
+	padding: 12px 16px;
+	color: var(--jais-blue-dark);
+	font-size: 14px;
+}
+
+/* ── Utility ── */
+.jais-mt-4  { margin-top: 4px; }
+.jais-mt-8  { margin-top: 8px; }
+.jais-mt-16 { margin-top: 16px; }
+.jais-mb-0  { margin-bottom: 0; }
+.jais-fw-600 { font-weight: 600; }
+.jais-fw-700 { font-weight: 700; }
+.jais-text-sm { font-size: 13px; }
+.jais-text-muted { color: var(--jais-gray-600); }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+	.jais-card { padding: 18px 16px; }
+	.jais-tabs { gap: 2px; }
+	.jais-tab-btn { padding: 8px 10px; font-size: 12px; }
+	.jais-salary-row { grid-template-columns: 1fr 1fr; }
+	.jais-job-rank-header { flex-direction: column; align-items: flex-start; }
+	.jais-card__header { gap: 10px; }
+	.jais-icon { font-size: 24px; }
+}

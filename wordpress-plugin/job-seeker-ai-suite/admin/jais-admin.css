@@ -1,0 +1,100 @@
+/* Job Seeker AI Suite — Admin Styles */
+
+.jais-admin-wrap h1 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.jais-version {
+	font-size: 13px;
+	font-weight: 400;
+	color: #999;
+	margin-left: 4px;
+}
+
+.jais-tab-content {
+	padding-top: 20px;
+}
+
+.jais-settings-card {
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	padding: 20px 24px;
+	margin-bottom: 20px;
+}
+
+.jais-settings-card h2 {
+	margin-top: 0;
+	font-size: 16px;
+	border-bottom: 1px solid #f0f0f0;
+	padding-bottom: 12px;
+	margin-bottom: 16px;
+}
+
+.jais-shortcode-display {
+	display: inline-block;
+	background: #f3f4f6;
+	padding: 6px 14px;
+	border-radius: 6px;
+	font-size: 15px;
+	border: 1px solid #e5e7eb;
+}
+
+/* ── Modules table ── */
+.jais-modules-table td,
+.jais-modules-table th {
+	vertical-align: middle;
+	padding: 10px 12px;
+}
+
+/* ── Usage table ── */
+.jais-usage-table tfoot th {
+	font-weight: 700;
+	background: #f9f9f9;
+}
+
+/* ── Toggle switch ── */
+.jais-toggle {
+	position: relative;
+	display: inline-block;
+	width: 44px;
+	height: 24px;
+}
+
+.jais-toggle input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.jais-toggle-slider {
+	position: absolute;
+	cursor: pointer;
+	inset: 0;
+	background: #ccc;
+	border-radius: 24px;
+	transition: .2s;
+}
+
+.jais-toggle-slider::before {
+	content: '';
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	left: 3px;
+	bottom: 3px;
+	background: #fff;
+	border-radius: 50%;
+	transition: .2s;
+}
+
+.jais-toggle input:checked + .jais-toggle-slider {
+	background: #1B6CA8;
+}
+
+.jais-toggle input:checked + .jais-toggle-slider::before {
+	transform: translateX(20px);
+}
