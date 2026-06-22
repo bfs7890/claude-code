@@ -6,15 +6,15 @@ class JAIS_Admin {
 	private static ?self $instance = null;
 
 	private array $modules = [
-		'cv_tailor'     => 'CV Tailor',
-		'skills_gap'    => 'Skills Gap Analyser',
-		'job_decoder'   => 'Job Decoder',
-		'company_brief' => 'Company Briefing',
-		'interview_prep'=> 'Interview Prep Coach',
-		'negotiation'   => 'Salary Negotiation Coach',
-		'prioritiser'   => 'Smart Job Prioritiser',
-		'burnout'       => 'Wellbeing & Burnout Tracker',
-		'video_sim'     => 'Video Interview Simulator',
+		'cv_tailor'      => 'CV Tailor',
+		'skills_gap'     => 'Skills Gap Analyser',
+		'job_decoder'    => 'Job Decoder',
+		'company_brief'  => 'Company Briefing',
+		'interview_prep' => 'Interview Prep Coach',
+		'negotiation'    => 'Salary Negotiation Coach',
+		'prioritiser'    => 'Smart Job Prioritiser',
+		'burnout'        => 'Wellbeing & Burnout Tracker',
+		'video_sim'      => 'Video Interview Simulator',
 	];
 
 	public static function get_instance(): self {
@@ -25,8 +25,8 @@ class JAIS_Admin {
 	}
 
 	private function __construct() {
-		add_action( 'admin_menu',    [ $this, 'register_menu' ] );
-		add_action( 'admin_init',    [ $this, 'register_settings' ] );
+		add_action( 'admin_menu',            [ $this, 'register_menu' ] );
+		add_action( 'admin_init',            [ $this, 'register_settings' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 	}
 
@@ -43,13 +43,27 @@ class JAIS_Admin {
 	}
 
 	public function register_settings(): void {
+		$providers = JAIS_API::get_providers();
+
+		register_setting( 'jais_settings_group', 'jais_provider', [
+			'sanitize_callback' => 'sanitize_text_field',
+			'default'           => 'anthropic',
+		] );
+
+		// Legacy Anthropic key option.
 		register_setting( 'jais_settings_group', 'jais_api_key', [
 			'sanitize_callback' => 'sanitize_text_field',
 		] );
-		register_setting( 'jais_settings_group', 'jais_model', [
-			'sanitize_callback' => 'sanitize_text_field',
-			'default'           => 'claude-sonnet-4-6',
-		] );
+
+		foreach ( array_keys( $providers ) as $provider ) {
+			register_setting( 'jais_settings_group', "jais_api_key_{$provider}", [
+				'sanitize_callback' => 'sanitize_text_field',
+			] );
+			register_setting( 'jais_settings_group', "jais_model_{$provider}", [
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => $providers[ $provider ]['default'],
+			] );
+		}
 
 		foreach ( array_keys( $this->modules ) as $key ) {
 			register_setting( 'jais_settings_group', "jais_enabled_{$key}", [
@@ -73,6 +87,20 @@ class JAIS_Admin {
 
 		$active_tab = sanitize_key( $_GET['tab'] ?? 'general' );
 		$usage_log  = get_option( 'jais_usage_log', [] );
+		$providers  = JAIS_API::get_providers();
+		$current_provider = get_option( 'jais_provider', 'anthropic' );
+
+		$provider_labels = [
+			'anthropic' => 'Anthropic (Claude)',
+			'openai'    => 'OpenAI (GPT)',
+			'google'    => 'Google (Gemini)',
+		];
+
+		$provider_costs = [
+			'anthropic' => 'Sonnet ~$0.010/query · Haiku ~$0.002/query',
+			'openai'    => 'GPT-4o Mini ~$0.0003/query · GPT-4o ~$0.005/query',
+			'google'    => 'Gemini Flash ~$0.0002/query · 1.5 Pro ~$0.002/query',
+		];
 		?>
 		<div class="wrap jais-admin-wrap">
 			<h1>
@@ -82,9 +110,9 @@ class JAIS_Admin {
 			</h1>
 
 			<nav class="nav-tab-wrapper">
-				<a href="?page=jais-settings&tab=general"  class="nav-tab <?php echo $active_tab === 'general'  ? 'nav-tab-active' : ''; ?>">General</a>
-				<a href="?page=jais-settings&tab=modules"  class="nav-tab <?php echo $active_tab === 'modules'  ? 'nav-tab-active' : ''; ?>">Modules</a>
-				<a href="?page=jais-settings&tab=usage"    class="nav-tab <?php echo $active_tab === 'usage'    ? 'nav-tab-active' : ''; ?>">Token Usage</a>
+				<a href="?page=jais-settings&tab=general"    class="nav-tab <?php echo $active_tab === 'general'    ? 'nav-tab-active' : ''; ?>">General</a>
+				<a href="?page=jais-settings&tab=modules"    class="nav-tab <?php echo $active_tab === 'modules'    ? 'nav-tab-active' : ''; ?>">Modules</a>
+				<a href="?page=jais-settings&tab=usage"      class="nav-tab <?php echo $active_tab === 'usage'      ? 'nav-tab-active' : ''; ?>">Token Usage</a>
 				<a href="?page=jais-settings&tab=shortcodes" class="nav-tab <?php echo $active_tab === 'shortcodes' ? 'nav-tab-active' : ''; ?>">Shortcodes</a>
 			</nav>
 
@@ -93,49 +121,77 @@ class JAIS_Admin {
 
 				<?php if ( $active_tab === 'general' ) : ?>
 				<div class="jais-tab-content">
+
 					<div class="jais-settings-card">
-						<h2>API Configuration</h2>
+						<h2>AI Provider</h2>
 						<table class="form-table">
 							<tr>
-								<th scope="row"><label for="jais_api_key">Anthropic API Key</label></th>
+								<th scope="row"><label for="jais_provider">Provider</label></th>
+								<td>
+									<select id="jais_provider" name="jais_provider" onchange="jaisToggleProvider(this.value)">
+										<?php foreach ( $provider_labels as $val => $label ) : ?>
+											<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $current_provider, $val ); ?>>
+												<?php echo esc_html( $label ); ?>
+											</option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description" id="jais-provider-cost">
+										<?php echo esc_html( $provider_costs[ $current_provider ] ?? '' ); ?>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<?php foreach ( $providers as $provider => $config ) :
+						$api_key_option = 'anthropic' === $provider ? 'jais_api_key' : "jais_api_key_{$provider}";
+						$current_key    = get_option( $api_key_option, '' );
+						$current_model  = get_option( "jais_model_{$provider}", $config['default'] );
+						$placeholders   = [
+							'anthropic' => 'sk-ant-…',
+							'openai'    => 'sk-…',
+							'google'    => 'AIza…',
+						];
+					?>
+					<div class="jais-settings-card jais-provider-card" id="jais-card-<?php echo esc_attr( $provider ); ?>" style="<?php echo $provider !== $current_provider ? 'display:none' : ''; ?>">
+						<h2><?php echo esc_html( $provider_labels[ $provider ] ); ?> Configuration</h2>
+						<table class="form-table">
+							<tr>
+								<th scope="row"><label for="jais_api_key_<?php echo esc_attr( $provider ); ?>">API Key</label></th>
 								<td>
 									<input
 										type="password"
-										id="jais_api_key"
-										name="jais_api_key"
-										value="<?php echo esc_attr( get_option( 'jais_api_key', '' ) ); ?>"
+										id="jais_api_key_<?php echo esc_attr( $provider ); ?>"
+										name="<?php echo esc_attr( $api_key_option ); ?>"
+										value="<?php echo esc_attr( $current_key ); ?>"
 										class="regular-text"
 										autocomplete="new-password"
-										placeholder="sk-ant-…"
+										placeholder="<?php echo esc_attr( $placeholders[ $provider ] ?? '' ); ?>"
 									>
-									<p class="description">Your Anthropic API key. Never shared with users or exposed to the frontend.</p>
+									<?php if ( 'anthropic' === $provider ) : ?>
+										<p class="description">Get your key at <strong>console.anthropic.com</strong></p>
+									<?php elseif ( 'openai' === $provider ) : ?>
+										<p class="description">Get your key at <strong>platform.openai.com/api-keys</strong></p>
+									<?php elseif ( 'google' === $provider ) : ?>
+										<p class="description">Get your key at <strong>aistudio.google.com</strong> — free tier: 1,500 requests/day</p>
+									<?php endif; ?>
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><label for="jais_model">Claude Model</label></th>
+								<th scope="row"><label for="jais_model_<?php echo esc_attr( $provider ); ?>">Model</label></th>
 								<td>
-									<select id="jais_model" name="jais_model">
-										<?php
-										$models = [
-											'claude-sonnet-4-6' => 'Claude Sonnet 4.6 (Recommended)',
-											'claude-haiku-4-5-20251001' => 'Claude Haiku 4.5 (Faster / Cheaper)',
-											'claude-opus-4-8'   => 'Claude Opus 4.8 (Most Capable)',
-										];
-										$current_model = get_option( 'jais_model', 'claude-sonnet-4-6' );
-										foreach ( $models as $id => $label ) {
-											printf(
-												'<option value="%s" %s>%s</option>',
-												esc_attr( $id ),
-												selected( $current_model, $id, false ),
-												esc_html( $label )
-											);
-										}
-										?>
+									<select id="jais_model_<?php echo esc_attr( $provider ); ?>" name="jais_model_<?php echo esc_attr( $provider ); ?>">
+										<?php foreach ( $config['models'] as $model_id => $model_label ) : ?>
+											<option value="<?php echo esc_attr( $model_id ); ?>" <?php selected( $current_model, $model_id ); ?>>
+												<?php echo esc_html( $model_label ); ?>
+											</option>
+										<?php endforeach; ?>
 									</select>
 								</td>
 							</tr>
 						</table>
 					</div>
+					<?php endforeach; ?>
 
 					<div class="jais-settings-card">
 						<h2>Dashboard Shortcode</h2>
@@ -146,6 +202,19 @@ class JAIS_Admin {
 					<?php submit_button( 'Save Settings' ); ?>
 				</div>
 
+				<script>
+				var jaisProviderCosts = <?php echo wp_json_encode( $provider_costs ); ?>;
+				function jaisToggleProvider(val) {
+					document.querySelectorAll('.jais-provider-card').forEach(function(el) {
+						el.style.display = 'none';
+					});
+					var card = document.getElementById('jais-card-' + val);
+					if (card) card.style.display = 'block';
+					var costEl = document.getElementById('jais-provider-cost');
+					if (costEl) costEl.textContent = jaisProviderCosts[val] || '';
+				}
+				</script>
+
 				<?php elseif ( $active_tab === 'modules' ) : ?>
 				<div class="jais-tab-content">
 					<div class="jais-settings-card">
@@ -153,11 +222,7 @@ class JAIS_Admin {
 						<p>Enable or disable each module and set its access level.</p>
 						<table class="widefat jais-modules-table">
 							<thead>
-								<tr>
-									<th>Module</th>
-									<th>Enabled</th>
-									<th>Access Level</th>
-								</tr>
+								<tr><th>Module</th><th>Enabled</th><th>Access Level</th></tr>
 							</thead>
 							<tbody>
 								<?php foreach ( $this->modules as $key => $label ) : ?>
@@ -281,9 +346,7 @@ class JAIS_Admin {
 							<thead><tr><th>Module</th><th>Shortcode</th></tr></thead>
 							<tbody>
 								<tr><td><strong>All Tools (Tabbed Dashboard)</strong></td><td><code>[jais_dashboard]</code></td></tr>
-								<?php foreach ( $this->modules as $key => $label ) :
-									$slug = str_replace( '_', '-', $key );
-								?>
+								<?php foreach ( $this->modules as $key => $label ) : ?>
 								<tr>
 									<td><?php echo esc_html( $label ); ?></td>
 									<td><code>[jais_<?php echo esc_html( $key ); ?>]</code></td>
